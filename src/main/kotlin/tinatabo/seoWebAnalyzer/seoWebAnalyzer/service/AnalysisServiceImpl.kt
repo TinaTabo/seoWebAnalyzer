@@ -7,17 +7,19 @@ import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.AnalysisRepository
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.GetResponseMapper
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.PostResponseMapper
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.webAnalyzer.WebAnalyzer
 
 @Service
 class AnalysisServiceImpl(
     //-- @Autowired: sirve para inyectar automaticamente los objetos de las dependencias.
     @Autowired private val analysisRepository: AnalysisRepository,
     @Autowired private val postResponseMapper: PostResponseMapper,
-    @Autowired private val getResponseMapper: GetResponseMapper
+    @Autowired private val getResponseMapper: GetResponseMapper,
+    @Autowired private val webAnalyzer: WebAnalyzer
 ) : AnalysisService {
     override fun makeAnalysis(url: String): PostResponseDTO {
         TODO("Not yet implemented")
-        //-- Hacer Análisis de la url y contruir el objeto Analysis. Puedo crear una funcion para ello y llamarla aquí.
+        //-- Hacer Análisis de la url y contruir el objeto Analysis.
 
         //-- Guardar el análisis en la BBDD.
 
