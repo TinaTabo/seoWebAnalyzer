@@ -4,7 +4,9 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.ErrorResponse
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -32,11 +34,28 @@ class AnalysisController(
     //-- POST: Realiza un nuevo análisis SEO de la url pasada por parámetro.
     @GetMapping
     fun getAnalysis(@RequestParam(required = false, defaultValue = "15") limit: Int): ResponseEntity<Any>{
+        //-- Por defecto muestra las 15 primeras entradas de la BBDD, si no se le pasa ningun limite por parámtro.
         return try {
             val result: List<GetResponseDTO> = analysisService.getAllAnalysis(limit)
             ResponseEntity(result, HttpStatus.OK)
         }catch (exception: Exception){
-            ResponseEntity("Error al obtener análisis", HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity("Error getting analysis", HttpStatus.INTERNAL_SERVER_ERROR)
+        }
+    }
+
+    @DeleteMapping("{id}")
+    fun deleteAnalysis(@PathVariable id: Int): ResponseEntity<Any> {
+        println(id)
+        return try {
+            val isDeleted = analysisService.deleteAnalysis(id)
+            println(isDeleted)
+            if (isDeleted) {
+                ResponseEntity("Analysis successfully deleted", HttpStatus.OK)
+            } else {
+                ResponseEntity("Analysis not found", HttpStatus.NOT_FOUND)
+            }
+        } catch (exception: Exception) {
+            ResponseEntity("Error deleting analysis", HttpStatus.INTERNAL_SERVER_ERROR)
         }
     }
 }

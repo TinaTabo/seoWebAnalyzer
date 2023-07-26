@@ -11,7 +11,7 @@ data class Analysis(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_analysis")
-    var id: Long? = null, //-- Se usa Long para rangos mayores que Int, como buenas prácticas.
+    var id_analysis: Int? = null, //-- Se usa Long para rangos mayores que Int, como buenas prácticas.
 
     @Column(nullable = false) //-- Indicar que el campo URL no puede ser nulo.
     var url: String,

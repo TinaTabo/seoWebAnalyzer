@@ -9,7 +9,7 @@ data class Keywords(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_keyword")
-    var id: Long? = null,
+    var id_keyword: Int? = null,
 
     @ManyToOne(fetch = FetchType.LAZY) //-- Relación de muchos a uno. LAZY se utiliza para que no se cargue la entidad Analysis de la BBDD a menos que se acceda explicitamente a ella.
     @JoinColumn(name = "id_analysis_key")

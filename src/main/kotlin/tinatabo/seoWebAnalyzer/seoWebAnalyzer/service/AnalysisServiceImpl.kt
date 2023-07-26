@@ -1,33 +1,30 @@
 package tinatabo.seoWebAnalyzer.seoWebAnalyzer.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.jdbc.core.BeanPropertyRowMapper
+import org.springframework.jdbc.core.JdbcTemplate
 import org.springframework.stereotype.Service
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.GetResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Keywords
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.TitleCount
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.AnalysisRepository
-import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.KeywordsRepository
-import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.TitleCountRepository
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.InvalidURLException
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.URLNotFoundException
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.isValidUrl
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.GetResponseMapper
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.PostResponseMapper
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.webAnalyzer.WebAnalyzer
-import java.net.URI
-import java.net.URISyntaxException
-import java.net.URL
-import java.util.regex.Pattern
 
 @Service
 class AnalysisServiceImpl(
     //-- @Autowired: sirve para inyectar automaticamente los objetos de las dependencias.
     @Autowired private val analysisRepository: AnalysisRepository,
-    @Autowired private val keywordsRepository: KeywordsRepository,
-    @Autowired private val titleCountRepository: TitleCountRepository,
     @Autowired private val postResponseMapper: PostResponseMapper,
     @Autowired private val getResponseMapper: GetResponseMapper,
-    @Autowired private val webAnalyzer: WebAnalyzer
+    @Autowired private val webAnalyzer: WebAnalyzer,
+    @Autowired private val jdbcTemplate: JdbcTemplate
 ) : AnalysisService {
 
     override fun makeAnalysis(url: String): PostResponseDTO {
@@ -35,36 +32,60 @@ class AnalysisServiceImpl(
         if (!isValidUrl(url)){
             throw InvalidURLException("The provided URL is invalid: $url")
         }
-        //-- Hacer Análisis de la url y contruir el objeto Analysis.
-        val analysis: Analysis
-        try {
-            analysis = webAnalyzer.analyze(url)
-        }catch (exception: Exception){
-            throw URLNotFoundException("URL not found: $url")
+
+        //-- Comprobar en la BBDD si existe el analisis de la url.
+        val analysis: Analysis? = jdbcTemplate.query(
+            "SELECT * FROM analysis WHERE url = ?",
+            BeanPropertyRowMapper(Analysis::class.java),
+            url
+        ).firstOrNull()
+
+        if (analysis != null){
+            //-- Obtener los datos de las tablas keywords y title_counts
+            val keywords: List<Keywords>? = analysis.id_analysis?.let {
+                jdbcTemplate.query(
+                    "SELECT * FROM keywords WHERE id_analysis_key = ?",
+                    BeanPropertyRowMapper(Keywords::class.java),
+                    it
+                )
+            }
+
+            val titles: List<TitleCount>? = analysis?.id_analysis?.let {
+                jdbcTemplate.query(
+                    "SELECT * FROM title_counts WHERE id_analysis_title = ?",
+                    BeanPropertyRowMapper(TitleCount::class.java),
+                    it
+                )
+            }
+
+            //-- Crear nueva instacia de PostResponseDTO con los datos obtenidos.
+            val postResponse = analysis.let{ it ->
+                PostResponseDTO(
+                    id = it.id_analysis,
+                    url = it.url,
+                    title = it.title,
+                    description = it.description,
+                    keywords = keywords?.map { keyword -> keyword.keyword } ?: listOf(),
+                    titles = titles?.associateBy({ it.titleType }, { it.count }) ?: mapOf(),
+                    html5 = it.html5,
+                    images = it.images,
+                    createdAt = it.createdAt
+                )
+            }
+            return postResponse
+        }else{
+            //-- Hacer Análisis de la url y contruir el objeto Analysis.
+            val newAnalysis: Analysis
+            try {
+                newAnalysis = webAnalyzer.analyze(url)
+            }catch (exception: Exception){
+                throw URLNotFoundException("URL not found: $url")
+            }
+            //-- Guardar el análisis en la BBDD.
+            val savedAnalysis = analysisRepository.save(newAnalysis)
+            //-- Convertir la entidad guardada a PostResponseDTO y devolverla al usuario.
+            return postResponseMapper.toDTO(savedAnalysis)
         }
-
-        //-- Guardar el análisis en la BBDD.
-        val savedAnalysis = analysisRepository.save(analysis)
-        //-- Convertir la entidad guardada a PostResponseDTO y devolverla al usuario.
-        return postResponseMapper.toDTO(savedAnalysis)
-    }
-
-
-    override fun getAnalysis(url: String): PostResponseDTO? {
-        //-- Buscar en la base de datos el analisis por la url.
-        println(url)
-        val analysisId = analysisRepository.findByUrl(url)
-        if (analysisId == null){
-            //-- No existe analisis de la URL --> se hace nuevo analisis.
-            makeAnalysis(url)
-        }
-        val keywords = keywordsRepository.findByAnalysisId(analysisId)
-        //val titles = titleCountRepository.findByAnalysisId(analysisId)
-
-        println(keywords)
-        //println(titles)
-
-        return TODO()
     }
 
     override fun getAllAnalysis(limit: Int): List<GetResponseDTO> {
@@ -74,14 +95,23 @@ class AnalysisServiceImpl(
         return allAnalysis.map { getResponseMapper.toDTO(it) }
     }
 
-    override fun deleteAnalysis(id: Long): Boolean {
-        //-- Buscar analisis por id
-        val analisisExists = analysisRepository.existsById(id)
+    override fun deleteAnalysis(id: Int): Boolean {
+        //-- Buscar analisis por id_title_counts
+        val analysis: Analysis? = jdbcTemplate.query(
+            "SELECT * FROM analysis WHERE id_analysis = ?",
+            BeanPropertyRowMapper(Analysis::class.java),
+            id
+        ).firstOrNull()
+
         //-- if existe -> lo elimino -> return true
         //-- if not existe -> return false
-        if (analisisExists){
-            analysisRepository.deleteById(id)
+        if (analysis != null){
+            jdbcTemplate.update(
+                "DELETE FROM analysis WHERE id_analysis = ?",
+                id
+            )
+            return true
         }
-        return analisisExists
+        return false
     }
 }

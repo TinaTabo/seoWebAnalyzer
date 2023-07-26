@@ -12,7 +12,7 @@ class PostResponseMapper: Mapper<PostResponseDTO, Analysis> {
     //-- DTO: Formato para enviar los datos de la entidad desde la API al Front
     override fun toDTO(entity: Analysis): PostResponseDTO {
         return PostResponseDTO(
-            id = entity.id ?: 0,
+            id = entity.id_analysis ?: 0,
             url = entity.url,
             title = entity.title,
             description = entity.description,
@@ -20,7 +20,7 @@ class PostResponseMapper: Mapper<PostResponseDTO, Analysis> {
             titles = entity.titles.associate { it.titleType to it.count },
             html5 = entity.html5,
             images = entity.images,
-            createdAt = entity.createdAt.toString()
+            createdAt = entity.createdAt
         )
     }
 
@@ -32,7 +32,7 @@ class PostResponseMapper: Mapper<PostResponseDTO, Analysis> {
             description = dto.description,
             html5 = dto.html5,
             images = dto.images,
-            createdAt = LocalDateTime.parse(dto.createdAt)
+            createdAt = dto.createdAt
         )
 
         //-- Estos elementos no se pueden agregar directamente en el return ya que para asignalos
