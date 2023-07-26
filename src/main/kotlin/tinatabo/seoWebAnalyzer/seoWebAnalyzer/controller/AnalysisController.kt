@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.DeleteResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.GetResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
@@ -44,18 +45,25 @@ class AnalysisController(
     }
 
     @DeleteMapping("{id}")
-    fun deleteAnalysis(@PathVariable id: Int): ResponseEntity<Any> {
-        println(id)
+    fun deleteAnalysis(@PathVariable id: Int): ResponseEntity<DeleteResponseDTO> {
         return try {
             val isDeleted = analysisService.deleteAnalysis(id)
-            println(isDeleted)
             if (isDeleted) {
-                ResponseEntity("Analysis successfully deleted", HttpStatus.OK)
+                ResponseEntity(
+                    DeleteResponseDTO("Analysis successfully deleted", HttpStatus.OK, HttpStatus.OK.value()),
+                    HttpStatus.OK
+                )
             } else {
-                ResponseEntity("Analysis not found", HttpStatus.NOT_FOUND)
+                ResponseEntity(
+                    DeleteResponseDTO("Analysis not found", HttpStatus.NOT_FOUND, HttpStatus.NOT_FOUND.value()),
+                    HttpStatus.NOT_FOUND
+                )
             }
         } catch (exception: Exception) {
-            ResponseEntity("Error deleting analysis", HttpStatus.INTERNAL_SERVER_ERROR)
+            ResponseEntity(
+                DeleteResponseDTO("Error deleting analysis", HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value()),
+                HttpStatus.INTERNAL_SERVER_ERROR
+            )
         }
     }
 }
