@@ -10,7 +10,7 @@ data class Keywords(
     @Column(name = "id_keyword")
     var id: Long? = null,
 
-    @ManyToOne(fetch = FetchType.LAZY) //-- Relación de muchos a uno. LAZY se utiliza para que no se cargue la entidad Analysis de la BBDD a menos que se acceda explicitamenta a ella.
+    @ManyToOne(fetch = FetchType.LAZY) //-- Relación de muchos a uno. LAZY se utiliza para que no se cargue la entidad Analysis de la BBDD a menos que se acceda explicitamente a ella.
     @JoinColumn(name = "id_analysis_key")
     var analysis: Analysis,
 

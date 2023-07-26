@@ -28,8 +28,9 @@ class WebAnalyzer {
 
         //-- Se extraen del documento los datos requeridos.
         val title = document.title()
-        val description = document.select("meta[type=description]").attr("content")
-        val keywords = document.select("meta[type=keywords]").attr("content").split(',')
+        //-- Al hacer el select tuve que cambiar 'type' por 'name' para obtener las descripcion y las keywords.
+        val description = document.select("meta[name=description]").attr("content")
+        val keywords = document.select("meta[name=keywords]").attr("content").split(',')
 
         val titles: MutableMap<String, Int> = mutableMapOf()
         for(i in 1..6){
@@ -39,9 +40,7 @@ class WebAnalyzer {
             }
         }
 
-        //-- Al usar !! le digo al compilador que se que html5 nunca va a ser null
-        //-- En el caso de que lo fuese causaria una NullPointerException
-        val html5 = document.documentType()!!.publicId().contains("html5",true)
+        val html5 = document.select("header, footer").isNotEmpty()
         val images = document.select("img").size
 
         //-- Creamos una variable de tipo 'Analysis' que nos servirá para guardar el análisis en la BBDD
