@@ -4,10 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.GetResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.AnalysisRepository
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.InvalidURLException
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.URLNotFoundException
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.isValidUrl
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.GetResponseMapper
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper.PostResponseMapper
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.webAnalyzer.WebAnalyzer
+import java.net.URI
+import java.net.URISyntaxException
+import java.net.URL
+import java.util.regex.Pattern
 
 @Service
 class AnalysisServiceImpl(
@@ -18,8 +26,18 @@ class AnalysisServiceImpl(
     @Autowired private val webAnalyzer: WebAnalyzer
 ) : AnalysisService {
     override fun makeAnalysis(url: String): PostResponseDTO {
+        //-- Validar la URL antes de realizar el análisis.
+        if (!isValidUrl(url)){
+            throw InvalidURLException("The provided URL is invalid: $url")
+        }
         //-- Hacer Análisis de la url y contruir el objeto Analysis.
-        val analysis = webAnalyzer.analyze(url)
+        val analysis: Analysis
+        try {
+            analysis = webAnalyzer.analyze(url)
+        }catch (exception: Exception){
+            throw URLNotFoundException("URL not found: $url")
+        }
+
         //-- Guardar el análisis en la BBDD.
         val savedAnalysis = analysisRepository.save(analysis)
         //-- Convertir la entidad guardada a PostResponseDTO y devolverla al usuario.
