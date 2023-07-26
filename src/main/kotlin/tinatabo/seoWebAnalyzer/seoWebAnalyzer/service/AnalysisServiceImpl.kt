@@ -6,6 +6,8 @@ import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.GetResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.AnalysisRepository
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.KeywordsRepository
+import tinatabo.seoWebAnalyzer.seoWebAnalyzer.repository.TitleCountRepository
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.InvalidURLException
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.exceptions.URLNotFoundException
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.isValidUrl
@@ -21,10 +23,13 @@ import java.util.regex.Pattern
 class AnalysisServiceImpl(
     //-- @Autowired: sirve para inyectar automaticamente los objetos de las dependencias.
     @Autowired private val analysisRepository: AnalysisRepository,
+    @Autowired private val keywordsRepository: KeywordsRepository,
+    @Autowired private val titleCountRepository: TitleCountRepository,
     @Autowired private val postResponseMapper: PostResponseMapper,
     @Autowired private val getResponseMapper: GetResponseMapper,
     @Autowired private val webAnalyzer: WebAnalyzer
 ) : AnalysisService {
+
     override fun makeAnalysis(url: String): PostResponseDTO {
         //-- Validar la URL antes de realizar el análisis.
         if (!isValidUrl(url)){
@@ -44,16 +49,22 @@ class AnalysisServiceImpl(
         return postResponseMapper.toDTO(savedAnalysis)
     }
 
+
     override fun getAnalysis(url: String): PostResponseDTO? {
         //-- Buscar en la base de datos el analisis por la url.
-        val analysis = analysisRepository.findByUrl(url)
-        //-- Si el análisis no existe hacer nuevo analisis, llamando al método makeAnalysis
-        //-- si el análisis existe, convertir el análisis encontrado a PostResponseDTO y devolverlo.
-        return if (analysis != null){
-            postResponseMapper.toDTO(analysis)
-        }else{
+        println(url)
+        val analysisId = analysisRepository.findByUrl(url)
+        if (analysisId == null){
+            //-- No existe analisis de la URL --> se hace nuevo analisis.
             makeAnalysis(url)
         }
+        val keywords = keywordsRepository.findByAnalysisId(analysisId)
+        //val titles = titleCountRepository.findByAnalysisId(analysisId)
+
+        println(keywords)
+        //println(titles)
+
+        return TODO()
     }
 
     override fun getAllAnalysis(limit: Int): List<GetResponseDTO> {

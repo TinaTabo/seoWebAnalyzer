@@ -1,5 +1,6 @@
 package tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity
 
+import com.fasterxml.jackson.annotation.*
 import jakarta.persistence.*
 
 @Entity

@@ -1,7 +1,6 @@
 package tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper
 
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.PostResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Keywords
