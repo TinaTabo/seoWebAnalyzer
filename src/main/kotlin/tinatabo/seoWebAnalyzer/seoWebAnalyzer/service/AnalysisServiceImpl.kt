@@ -34,11 +34,12 @@ class AnalysisServiceImpl(
         }
 
         //-- Comprobar en la BBDD si existe el analisis de la url.
+        //-- Se utiliza la clase jdbcTemplate que simplica la interacción con la BBDD.
         val analysis: Analysis? = jdbcTemplate.query(
-            "SELECT * FROM analysis WHERE url = ?",
-            BeanPropertyRowMapper(Analysis::class.java),
-            url
-        ).firstOrNull()
+            "SELECT * FROM analysis WHERE url = ?",  //-- Consulta que se le hace a la BBDD.
+            BeanPropertyRowMapper(Analysis::class.java), //-- Mappea una fila de resultados de la consulta a una instancia Analysis
+            url //-- Este campo reemplaza ?              //-- Es importante que los nombre de las columnas en los resultados de la consulta
+        ).firstOrNull()                                  //-- sean iguales a los nombres de los campos de la clase Analysis.
 
         if (analysis != null){
             //-- Obtener los datos de las tablas keywords y title_counts
@@ -50,7 +51,7 @@ class AnalysisServiceImpl(
                 )
             }
 
-            val titles: List<TitleCount>? = analysis?.id_analysis?.let {
+            val titles: List<TitleCount>? = analysis.id_analysis?.let {
                 jdbcTemplate.query(
                     "SELECT * FROM title_counts WHERE id_analysis_title = ?",
                     BeanPropertyRowMapper(TitleCount::class.java),
