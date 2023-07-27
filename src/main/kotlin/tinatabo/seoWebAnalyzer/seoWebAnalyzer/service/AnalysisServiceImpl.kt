@@ -1,5 +1,6 @@
 package tinatabo.seoWebAnalyzer.seoWebAnalyzer.service
 
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.jdbc.core.BeanPropertyRowMapper
 import org.springframework.jdbc.core.JdbcTemplate
@@ -27,6 +28,11 @@ class AnalysisServiceImpl(
     @Autowired private val jdbcTemplate: JdbcTemplate
 ) : AnalysisService {
 
+    //-- Sistema de Logging
+    companion object {
+        private val logger = LoggerFactory.getLogger(AnalysisServiceImpl::class.java)
+    }
+
     override fun makeAnalysis(url: String): PostResponseDTO {
         //-- Validar la URL antes de realizar el análisis.
         if (!isValidUrl(url)){
@@ -42,6 +48,7 @@ class AnalysisServiceImpl(
         ).firstOrNull()                                  //-- sean iguales a los nombres de los campos de la clase Analysis.
 
         if (analysis != null){
+            logger.info("Existing analysis found in the database for url: $url")
             //-- Obtener los datos de las tablas keywords y title_counts
             val keywords: List<Keywords>? = analysis.id_analysis?.let {
                 jdbcTemplate.query(
@@ -75,6 +82,7 @@ class AnalysisServiceImpl(
             }
             return postResponse
         }else{
+            logger.info("No existing analysis found. Performing new analysis for url: $url")
             //-- Hacer Análisis de la url y contruir el objeto Analysis.
             val newAnalysis: Analysis
             try {
