@@ -99,7 +99,7 @@ class AnalysisServiceImpl(
 
     override fun getAllAnalysis(limit: Int): List<GetResponseDTO> {
         //-- Buscar en la BBDD todos los análisis hasta el limite especificado
-        val allAnalysis = analysisRepository.findAll().take(limit)
+        val allAnalysis = analysisRepository.findAll().reversed().take(limit)
         //-- Convertir cada análisis encontrado a GetResponseDTO y devolver la lista con todos.
         return allAnalysis.map { getResponseMapper.toDTO(it) }
     }
