@@ -11,7 +11,7 @@ class GetResponseMapper: Mapper<GetResponseDTO, Analysis> {
         return GetResponseDTO(
             id = entity.id_analysis ?: 0,
             url = entity.url,
-            createdAt = entity.createdAt.format(DateTimeFormatter.ISO_DATE) //-- ISO_DATE utiliza el formato de la ISO 8601, que se ve asi: 2023-07-24T16:30:00.000Z
+            createdAt = entity.createdAt
         )
     }
 
