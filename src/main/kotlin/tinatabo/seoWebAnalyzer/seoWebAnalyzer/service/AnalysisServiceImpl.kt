@@ -77,7 +77,8 @@ class AnalysisServiceImpl(
                     titles = titles?.associateBy({ it.titleType }, { it.count }) ?: mapOf(),
                     html5 = it.html5,
                     images = it.images,
-                    createdAt = it.createdAt
+                    createdAt = it.createdAt,
+                    isNew = false
                 )
             }
             return postResponse

@@ -12,5 +12,6 @@ data class PostResponseDTO(
     val titles: Map<String, Int>,
     val html5: Boolean,
     val images: Int,
-    val createdAt: LocalDateTime
+    val createdAt: LocalDateTime,
+    val isNew: Boolean = true
 )
