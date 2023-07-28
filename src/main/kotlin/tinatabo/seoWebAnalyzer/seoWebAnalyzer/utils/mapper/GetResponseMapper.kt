@@ -3,7 +3,6 @@ package tinatabo.seoWebAnalyzer.seoWebAnalyzer.utils.mapper
 import org.springframework.stereotype.Component
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.dto.GetResponseDTO
 import tinatabo.seoWebAnalyzer.seoWebAnalyzer.entity.Analysis
-import java.time.format.DateTimeFormatter
 
 @Component
 class GetResponseMapper: Mapper<GetResponseDTO, Analysis> {
