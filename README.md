@@ -70,9 +70,9 @@ En esta carpeta se encuentran todas las excepciones personalizadas y el controla
 - **URLNotFoundException.kt**: Otra excepción personalizada que se lanza si la URL proporcionada no se encuentra.
 
 #### Mappers: Carpeta mapper
-Los mapeadores son responsables de convertir objetos de entidad en DTOs y viceversa. Los mappers se utilizan para separar las entidades de la base de datos del resto de la aplicación.  
-- **GetResponseMapper.kt**: Convierte la entidad Analysis a GetResponseDTO.
+Los mapeadores son responsables de convertir objetos de entidad en DTOs y viceversa. Los mappers se utilizan para separar las entidades de la base de datos del resto de la aplicación.
 - **Mapper.kt**: Interfaz general para todos los mappers.
+- **GetResponseMapper.kt**: Convierte la entidad Analysis a GetResponseDTO.
 - **PostResponseMapper.kt**: Convierte la entidad Analysis a PostResponseDTO y viceversa.
   
 #### UrlUtils.kt
@@ -87,5 +87,5 @@ Este es el archivo principal de la aplicación. Inicia la aplicación y es el pu
 ### BBDD - MySQL
 Se utiliza MySQL y Hibernate con la estrategia de generación de esquema update, que actualiza automáticamente el esquema de la base de datos cuando cambia el modelo de la aplicación.  
 
-  
+## Conclusión  
 En resumen, esta API toma una URL, realiza un análisis SEO en el contenido de esa URL y guarda los resultados en una base de datos MySQL. Los resultados luego se pueden recuperar a través de la API y presentarse al cliente. Las diversas clases y archivos soportan esta funcionalidad.
