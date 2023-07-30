@@ -9,6 +9,24 @@ La API ha sido diseñada para realizar análisis SEO de URLs específicas. Para 
 - https://www.rtve.es
 - http://www.urjc.es
 - https://stackoverflow.com/
+- https://www.asos.com/es/
+- https://www.amazon.es
+- https://refactoring.guru/es/design-patterns
+- https://kotlinlang.org/
+- https://tailwindcss.com/
+- https://www.dafont.com/es/
+- https://www.atresmedia.com/
+- https://angular.io/
+- http://www.iemoji.com/#?category=animals-nature&version=36&theme=appl&skintone=default
+- https://getbootstrap.com/
+- https://mouredev.com/
+- https://midu.dev/
+- https://www.w3schools.com/
+- https://simlish4.com/
+- https://www.youtube.com/
+- https://www.getmanfred.com/developer-career-report
+- https://www.deepl.com/translator
+- https://www.stackoverflow.com
 
 Se ha programado en Kotlin utilizando el framework de Spring Boot.  
 A continuación se detalla la funcionalidad de los distintos archivos que componen esta API REST.
