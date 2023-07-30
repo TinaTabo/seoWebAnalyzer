@@ -28,6 +28,10 @@ dependencies {
 	implementation("org.jsoup:jsoup:1.16.1")
 	runtimeOnly("com.mysql:mysql-connector-j")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+	testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+	testImplementation("org.mockito:mockito-core:5.4.0")
+	testImplementation("org.mockito:mockito-inline:5.2.0")
 }
 
 tasks.withType<KotlinCompile> {
